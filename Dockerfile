@@ -21,9 +21,14 @@ COPY frontend ./frontend
 RUN npm -w backend run build
 RUN npm -w frontend run build
 
-FROM node:22-alpine AS runtime
+FROM node:22-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
+
+# journalctl for host logs (requires /var/log/journal mount + systemd-journal group)
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends systemd \
+  && rm -rf /var/lib/apt/lists/*
 
 # Only install production deps for backend
 COPY package.json package-lock.json ./

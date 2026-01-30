@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { HostLogsPanel } from './modules/hostLogs/HostLogsPanel';
 import { Card } from './components/ui/Card';
 import { Badge } from './components/ui/Badge';
 import { AppGrid } from './modules/apps/AppGrid';
@@ -17,6 +18,8 @@ export default function App() {
   const { metrics, history, lastUpdated, error: metricsError } = useMetrics({
     intervalMs: 12_000
   });
+
+  const [tab, setTab] = useState<'dashboard' | 'logs'>('dashboard');
 
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string>('');
@@ -63,65 +66,106 @@ export default function App() {
           </div>
         </header>
 
-        <MetricsCards metrics={metrics} history={history} error={metricsError} />
-
-        <div className="mt-6 sm:mt-8">
-          <Card
-            title="Favoritos"
-            right={<Badge tone="neutral">{favorites.length}</Badge>}
+        <div className="mb-6 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setTab('dashboard')}
+            className={`rounded-lg border px-3 py-1.5 text-xs ${
+              tab === 'dashboard'
+                ? 'border-white/20 bg-white/10 text-zinc-100'
+                : 'border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10'
+            }`}
           >
-            {favoriteApps.length === 0 ? (
-              <p className="text-sm text-zinc-400">
-                Nenhum favorito ainda. Passe o mouse em um app e clique na estrela.
-              </p>
-            ) : (
-              <AppGrid apps={favoriteApps} favoritesSet={favoritesSet} onToggleFavorite={toggle} />
-            )}
-          </Card>
-        </div>
-
-        <div className="mt-6 sm:mt-8">
-          <Card
-            title="Apps"
-            right={
-              <div className="flex flex-wrap items-center gap-2">
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Buscar…"
-                  className="w-40 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-white/20"
-                />
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-100 outline-none focus:border-white/20"
-                >
-                  <option value="">Todas</option>
-                  {categories.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-                <Badge tone="neutral">{visible.length}</Badge>
-              </div>
-            }
+            Dashboard
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('logs')}
+            className={`rounded-lg border px-3 py-1.5 text-xs ${
+              tab === 'logs'
+                ? 'border-white/20 bg-white/10 text-zinc-100'
+                : 'border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10'
+            }`}
           >
-            {loading && <p className="text-sm text-zinc-400">Carregando apps…</p>}
-            {error && (
-              <p className="text-sm text-rose-200">Erro ao carregar apps: {error}</p>
-            )}
-            {!loading && !error && (
-              <AppGrid apps={otherApps} favoritesSet={favoritesSet} onToggleFavorite={toggle} />
-            )}
-          </Card>
+            Logs (host)
+          </button>
         </div>
 
-        <div className="mt-6 sm:mt-8">
-          <Card title="Gerenciar apps">
-            <ManageApps apps={apps} onChanged={reload} />
+        {tab === 'dashboard' ? (
+          <>
+            <MetricsCards metrics={metrics} history={history} error={metricsError} />
+
+            <div className="mt-6 sm:mt-8">
+              <Card
+                title="Favoritos"
+                right={<Badge tone="neutral">{favorites.length}</Badge>}
+              >
+                {favoriteApps.length === 0 ? (
+                  <p className="text-sm text-zinc-400">
+                    Nenhum favorito ainda. Passe o mouse em um app e clique na estrela.
+                  </p>
+                ) : (
+                  <AppGrid
+                    apps={favoriteApps}
+                    favoritesSet={favoritesSet}
+                    onToggleFavorite={toggle}
+                  />
+                )}
+              </Card>
+            </div>
+
+            <div className="mt-6 sm:mt-8">
+              <Card
+                title="Apps"
+                right={
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Buscar…"
+                      className="w-40 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-white/20"
+                    />
+                    <select
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-100 outline-none focus:border-white/20"
+                    >
+                      <option value="">Todas</option>
+                      {categories.map((c) => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
+                    </select>
+                    <Badge tone="neutral">{visible.length}</Badge>
+                  </div>
+                }
+              >
+                {loading && <p className="text-sm text-zinc-400">Carregando apps…</p>}
+                {error && (
+                  <p className="text-sm text-rose-200">Erro ao carregar apps: {error}</p>
+                )}
+                {!loading && !error && (
+                  <AppGrid
+                    apps={otherApps}
+                    favoritesSet={favoritesSet}
+                    onToggleFavorite={toggle}
+                  />
+                )}
+              </Card>
+            </div>
+
+            <div className="mt-6 sm:mt-8">
+              <Card title="Gerenciar apps">
+                <ManageApps apps={apps} onChanged={reload} />
+              </Card>
+            </div>
+          </>
+        ) : (
+          <Card title="Logs do host (journald)">
+            <HostLogsPanel />
           </Card>
-        </div>
+        )}
 
         <footer className="mt-8 text-xs text-zinc-600">
           /api/apps · /api/metrics

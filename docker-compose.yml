@@ -20,5 +20,11 @@ services:
       - APPS_PING_TIMEOUT_MS=3000
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    group_add:
+      - "999" # systemd-journal on Ubuntu
+    volumes:
+      - /var/log/journal:/var/log/journal:ro
+      - /run/log/journal:/run/log/journal:ro
+      - /etc/machine-id:/etc/machine-id:ro
     ports:
       - "80:8080"

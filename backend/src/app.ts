@@ -11,6 +11,7 @@ import { appsRoutes } from './features/apps/routes.js';
 import { registerAppsPingLoop } from './features/apps/pingLoop.js';
 import { metricsRoutes } from './features/metrics/routes.js';
 import { statusRoutes } from './features/status/routes.js';
+import { hostLogsRoutes } from './features/hostLogs/routes.js';
 
 export async function buildApp(config: AppConfig, opts?: { skipDb?: boolean }) {
   const app = Fastify({
@@ -42,6 +43,7 @@ export async function buildApp(config: AppConfig, opts?: { skipDb?: boolean }) {
   });
 
   await app.register(statusRoutes, { prefix: '/api/status' });
+  await app.register(hostLogsRoutes, { prefix: '/api/host-logs' });
 
   registerAppsPingLoop(app);
   await app.register(appsRoutes, { prefix: '/api/apps' });
