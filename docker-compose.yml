@@ -1,0 +1,19 @@
+services:
+  homelab-hub:
+    build: .
+    container_name: homelab-hub
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=8080
+      - STATIC_DIR=/app/backend/public
+      - CORS_ORIGIN=http://localhost
+      - SERVER_NAME=homelab-hub
+      - METRICS_MODE=auto
+      - DISK_MOUNT=/
+      - APPS_FILE=/app/data/apps.json
+    volumes:
+      - ./data:/app/data:ro
+    ports:
+      - "80:8080"
+    restart: unless-stopped

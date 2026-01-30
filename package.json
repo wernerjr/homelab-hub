@@ -1,0 +1,23 @@
+{
+  "name": "homelab-hub",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "npm@10",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "overrides": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "scripts": {
+    "dev:backend": "npm -w backend run dev",
+    "dev:frontend": "npm -w frontend run dev",
+    "build:backend": "npm -w backend run build",
+    "build:frontend": "npm -w frontend run build",
+    "lint": "npm -ws run lint",
+    "format": "npm -ws run format",
+    "test": "npm -ws run test"
+  }
+}

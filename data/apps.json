@@ -1,0 +1,26 @@
+[
+  {
+    "id": "homelab-hub",
+    "name": "Homelab Hub",
+    "category": "Dashboard",
+    "url": "http://192.168.15.100/",
+    "status": "online",
+    "description": "Dashboard principal (esta página)."
+  },
+  {
+    "id": "portainer",
+    "name": "Portainer",
+    "category": "Containers",
+    "url": "http://192.168.15.100:9000/",
+    "status": "online",
+    "description": "UI para Docker e stacks (Portainer CE)."
+  },
+  {
+    "id": "prompt-vault",
+    "name": "Prompt Vault",
+    "category": "Tools",
+    "url": "http://192.168.15.100:3000/",
+    "status": "online",
+    "description": "App do Prompt Vault."
+  }
+]

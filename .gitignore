@@ -1,0 +1,16 @@
+# dependencies
+node_modules/
+
+# build outputs
+backend/dist/
+frontend/dist/
+
+# test artifacts
+backend/.tap/
+backend/test/*.js
+backend/test/*.map
+
+# misc
+.DS_Store
+.env
+.env.*
