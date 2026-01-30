@@ -33,11 +33,17 @@ export const hostLogsRoutes: FastifyPluginAsync = async (app) => {
       }
     },
     async (req, reply) => {
+      // Fastify needs hijack for long-lived raw streams (SSE)
+      reply.hijack();
       reply.raw.writeHead(200, {
         'Content-Type': 'text/event-stream; charset=utf-8',
         'Cache-Control': 'no-cache, no-transform',
         Connection: 'keep-alive'
       });
+      reply.raw.flushHeaders?.();
+
+      // initial ping so UI doesn't look stuck
+      reply.raw.write(`: connected\n\n`);
 
       const child = service.streamJournal(req.query);
 
@@ -75,7 +81,8 @@ export const hostLogsRoutes: FastifyPluginAsync = async (app) => {
       req.raw.on('close', cleanup);
       req.raw.on('aborted', cleanup);
 
-      return reply;
+      // keep connection open
+      return;
     }
   );
 };

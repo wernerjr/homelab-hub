@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { HostLogsPanel } from './modules/hostLogs/HostLogsPanel';
 import { Card } from './components/ui/Card';
 import { Badge } from './components/ui/Badge';
@@ -44,73 +44,45 @@ export default function App() {
       : 'bad'
     : 'neutral';
 
+  const tabItems = useMemo(
+    () =>
+      [
+        { id: 'dashboard' as const, label: 'Dashboard' },
+        { id: 'apps' as const, label: 'Apps' },
+        { id: 'logs' as const, label: 'Logs' }
+      ],
+    []
+  );
+
   return (
     <div className="min-h-dvh bg-zinc-950 text-zinc-100">
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
-        <header className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl font-semibold tracking-tight">
+      {/* content */}
+      <div className="mx-auto max-w-6xl px-4 pt-5 pb-24 sm:pt-8 sm:pb-28">
+        <header className="mb-4 flex items-center justify-between gap-3 sm:mb-6">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="truncate text-lg font-semibold tracking-tight sm:text-2xl">
                 {status?.serverName ?? 'homelab'}
               </h1>
               <Badge tone={overallTone}>status {metrics ? 'ok' : '…'}</Badge>
               {status?.hostname && <Badge tone="neutral">{status.hostname}</Badge>}
             </div>
-            <p className="mt-1 text-sm text-zinc-400">
-              Dashboard único do seu homelab — atalhos + métricas em quase tempo real.
+            <p className="mt-1 text-xs text-zinc-400 sm:text-sm">
+              Dashboard + apps + logs
             </p>
           </div>
 
-          <div className="text-xs text-zinc-500">
+          <div className="shrink-0 text-[11px] text-zinc-500 sm:text-xs">
             {lastUpdated ? `Atualizado: ${lastUpdated.toLocaleTimeString()}` : 'Carregando…'}
           </div>
         </header>
-
-        <div className="mb-6 flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setTab('dashboard')}
-            className={`rounded-lg border px-3 py-1.5 text-xs ${
-              tab === 'dashboard'
-                ? 'border-white/20 bg-white/10 text-zinc-100'
-                : 'border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10'
-            }`}
-          >
-            Dashboard
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab('apps')}
-            className={`rounded-lg border px-3 py-1.5 text-xs ${
-              tab === 'apps'
-                ? 'border-white/20 bg-white/10 text-zinc-100'
-                : 'border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10'
-            }`}
-          >
-            Apps
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab('logs')}
-            className={`rounded-lg border px-3 py-1.5 text-xs ${
-              tab === 'logs'
-                ? 'border-white/20 bg-white/10 text-zinc-100'
-                : 'border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10'
-            }`}
-          >
-            Logs (host)
-          </button>
-        </div>
 
         {tab === 'dashboard' ? (
           <MetricsCards metrics={metrics} history={history} error={metricsError} />
         ) : tab === 'apps' ? (
           <>
-            <div className="mt-6">
-              <Card
-                title="Favoritos"
-                right={<Badge tone="neutral">{favorites.length}</Badge>}
-              >
+            <div className="mt-4 sm:mt-6">
+              <Card title="Favoritos" right={<Badge tone="neutral">{favorites.length}</Badge>}>
                 {favoriteApps.length === 0 ? (
                   <p className="text-sm text-zinc-400">
                     Nenhum favorito ainda. Passe o mouse em um app e clique na estrela.
@@ -125,21 +97,21 @@ export default function App() {
               </Card>
             </div>
 
-            <div className="mt-6 sm:mt-8">
+            <div className="mt-4 sm:mt-8">
               <Card
                 title="Apps"
                 right={
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex w-full flex-wrap items-center justify-end gap-2">
                     <input
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder="Buscar…"
-                      className="w-40 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-white/20"
+                      className="w-full max-w-[14rem] rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-white/20"
                     />
                     <select
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-100 outline-none focus:border-white/20"
+                      className="w-full max-w-[10rem] rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-100 outline-none focus:border-white/20"
                     >
                       <option value="">Todas</option>
                       {categories.map((c) => (
@@ -166,7 +138,7 @@ export default function App() {
               </Card>
             </div>
 
-            <div className="mt-6 sm:mt-8">
+            <div className="mt-4 sm:mt-8">
               <Card title="Gerenciar apps">
                 <ManageApps apps={apps} onChanged={reload} />
               </Card>
@@ -178,10 +150,36 @@ export default function App() {
           </Card>
         )}
 
-        <footer className="mt-8 text-xs text-zinc-600">
+        <footer className="mt-6 text-[11px] text-zinc-600 sm:text-xs">
           /api/apps · /api/metrics
         </footer>
       </div>
+
+      {/* bottom tabs (mobile-first) */}
+      <nav
+        className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-zinc-950/80 backdrop-blur"
+        style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0px)' }}
+      >
+        <div className="mx-auto flex max-w-6xl px-2">
+          {tabItems.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={`flex flex-1 flex-col items-center justify-center gap-1 px-2 py-3 text-xs ${
+                tab === t.id ? 'text-zinc-100' : 'text-zinc-400'
+              }`}
+            >
+              <span
+                className={`h-1.5 w-8 rounded-full ${
+                  tab === t.id ? 'bg-white/30' : 'bg-transparent'
+                }`}
+              />
+              <span>{t.label}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
     </div>
   );
 }

@@ -32,7 +32,8 @@ export class HostLogsService {
   }
 
   streamJournal(opts: { unit?: string }) {
-    const args: string[] = ['--no-pager', '--output=short-iso', '-f', '-n', '0'];
+    // -n 50 so the client gets something immediately, then -f keeps streaming
+    const args: string[] = ['--no-pager', '--output=short-iso', '-f', '-n', '50'];
     if (opts.unit) {
       args.unshift(`--unit=${opts.unit}`);
     }

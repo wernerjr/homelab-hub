@@ -28,7 +28,8 @@ export function HostLogsPanel() {
     const qs = new URLSearchParams();
     if (unit.trim()) qs.set('unit', unit.trim());
 
-    const es = new EventSource(`/api/host-logs/stream?${qs.toString()}`);
+    const url = qs.toString() ? `/api/host-logs/stream?${qs.toString()}` : '/api/host-logs/stream';
+    const es = new EventSource(url);
     esRef.current = es;
 
     es.onmessage = (ev) => {
@@ -97,7 +98,7 @@ export function HostLogsPanel() {
         ref={boxRef}
         className="max-h-[65vh] overflow-auto rounded-2xl border border-white/10 bg-black/40 p-3 font-mono text-xs leading-relaxed text-zinc-200"
       >
-        {text || 'Carregando…'}
+        {text || (mode === 'stream' ? 'Conectando ao stream…' : 'Carregando…')}
       </div>
 
       <p className="text-xs text-zinc-500">
