@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { HomelabApp } from './types';
 
 export function useApps() {
@@ -6,16 +6,20 @@ export function useApps() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const reload = useCallback(async () => {
+    const res = await fetch('/api/apps');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = (await res.json()) as HomelabApp[];
+    setApps(data);
+  }, []);
+
   useEffect(() => {
     let alive = true;
 
     async function run() {
       try {
         setLoading(true);
-        const res = await fetch('/api/apps');
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = (await res.json()) as HomelabApp[];
-        if (alive) setApps(data);
+        await reload();
       } catch (e) {
         if (alive) setError(e instanceof Error ? e.message : 'Erro ao carregar apps');
       } finally {
@@ -27,7 +31,7 @@ export function useApps() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [reload]);
 
-  return { apps, loading, error };
+  return { apps, setApps, reload, loading, error };
 }

@@ -4,7 +4,7 @@ export type AppConfig = {
   corsOrigin: string;
   staticDir?: string;
   serverName: string;
-  appsFile?: string;
+  databaseUrl: string;
   metricsMode: 'mock' | 'real' | 'auto';
   diskMount: string;
 };
@@ -19,15 +19,15 @@ export function getConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 
   const serverName = env.SERVER_NAME ?? 'homelab';
 
+  const databaseUrl = env.DATABASE_URL ?? 'postgres://promptvault:promptvault@localhost:5432/promptvault';
+
   const metricsModeRaw = (env.METRICS_MODE ?? 'auto').toLowerCase();
   const metricsMode =
     metricsModeRaw === 'mock' || metricsModeRaw === 'real' || metricsModeRaw === 'auto'
       ? (metricsModeRaw as AppConfig['metricsMode'])
       : 'auto';
 
-  const appsFile = env.APPS_FILE;
-
   const diskMount = env.DISK_MOUNT ?? '/';
 
-  return { host, port, corsOrigin, staticDir, serverName, appsFile, metricsMode, diskMount };
+  return { host, port, corsOrigin, staticDir, serverName, databaseUrl, metricsMode, diskMount };
 }

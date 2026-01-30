@@ -1,7 +1,11 @@
 services:
+  # Uses the shared PostgreSQL container already running on this host:
+  #   container: shared-postgres
+  #   port: 5432
   homelab-hub:
     build: .
     container_name: homelab-hub
+    restart: unless-stopped
     environment:
       - NODE_ENV=production
       - HOST=0.0.0.0
@@ -9,11 +13,10 @@ services:
       - STATIC_DIR=/app/backend/public
       - CORS_ORIGIN=http://localhost
       - SERVER_NAME=homelab-hub
+      - DATABASE_URL=postgres://promptvault:promptvault@host.docker.internal:5432/promptvault
       - METRICS_MODE=auto
       - DISK_MOUNT=/
-      - APPS_FILE=/app/data/apps.json
-    volumes:
-      - ./data:/app/data:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "80:8080"
-    restart: unless-stopped

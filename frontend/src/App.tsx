@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card } from './components/ui/Card';
 import { Badge } from './components/ui/Badge';
 import { AppGrid } from './modules/apps/AppGrid';
+import { ManageApps } from './modules/apps/ManageApps';
 import { useApps } from './modules/apps/useApps';
 import { useFavorites } from './modules/apps/useFavorites';
 import { MetricsCards } from './modules/metrics/MetricsCards';
@@ -10,7 +11,7 @@ import { useStatus } from './modules/status/useStatus';
 
 export default function App() {
   const { status } = useStatus();
-  const { apps, loading, error } = useApps();
+  const { apps, loading, error, reload } = useApps();
   const { favoritesSet, toggle, favorites } = useFavorites();
 
   const { metrics, history, lastUpdated, error: metricsError } = useMetrics({
@@ -113,6 +114,12 @@ export default function App() {
             {!loading && !error && (
               <AppGrid apps={otherApps} favoritesSet={favoritesSet} onToggleFavorite={toggle} />
             )}
+          </Card>
+        </div>
+
+        <div className="mt-6 sm:mt-8">
+          <Card title="Gerenciar apps">
+            <ManageApps apps={apps} onChanged={reload} />
           </Card>
         </div>
 
