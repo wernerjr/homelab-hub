@@ -5,6 +5,10 @@ export const HostLogsQuerySchema = z.object({
   unit: z.string().min(1).optional()
 });
 
+export const HostLogsStreamQuerySchema = z.object({
+  unit: z.string().min(1).optional()
+});
+
 export const HostLogsResponseSchema = z.object({
   source: z.literal('journalctl'),
   lines: z.array(z.string())

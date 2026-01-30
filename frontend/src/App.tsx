@@ -19,7 +19,7 @@ export default function App() {
     intervalMs: 12_000
   });
 
-  const [tab, setTab] = useState<'dashboard' | 'logs'>('dashboard');
+  const [tab, setTab] = useState<'dashboard' | 'apps' | 'logs'>('dashboard');
 
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string>('');
@@ -80,6 +80,17 @@ export default function App() {
           </button>
           <button
             type="button"
+            onClick={() => setTab('apps')}
+            className={`rounded-lg border px-3 py-1.5 text-xs ${
+              tab === 'apps'
+                ? 'border-white/20 bg-white/10 text-zinc-100'
+                : 'border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10'
+            }`}
+          >
+            Apps
+          </button>
+          <button
+            type="button"
             onClick={() => setTab('logs')}
             className={`rounded-lg border px-3 py-1.5 text-xs ${
               tab === 'logs'
@@ -92,10 +103,10 @@ export default function App() {
         </div>
 
         {tab === 'dashboard' ? (
+          <MetricsCards metrics={metrics} history={history} error={metricsError} />
+        ) : tab === 'apps' ? (
           <>
-            <MetricsCards metrics={metrics} history={history} error={metricsError} />
-
-            <div className="mt-6 sm:mt-8">
+            <div className="mt-6">
               <Card
                 title="Favoritos"
                 right={<Badge tone="neutral">{favorites.length}</Badge>}

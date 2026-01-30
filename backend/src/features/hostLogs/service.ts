@@ -30,4 +30,13 @@ export class HostLogsService {
       });
     });
   }
+
+  streamJournal(opts: { unit?: string }) {
+    const args: string[] = ['--no-pager', '--output=short-iso', '-f', '-n', '0'];
+    if (opts.unit) {
+      args.unshift(`--unit=${opts.unit}`);
+    }
+    const child = spawn('journalctl', args, { stdio: ['ignore', 'pipe', 'pipe'] });
+    return child;
+  }
 }
