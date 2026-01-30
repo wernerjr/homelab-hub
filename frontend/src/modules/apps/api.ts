@@ -1,8 +1,8 @@
 import type { HomelabApp } from './types';
 
-type AppCreate = Omit<HomelabApp, 'id'>;
+type AppCreate = Omit<HomelabApp, 'id' | 'status'>;
 
-type AppUpdate = Partial<Omit<HomelabApp, 'id'>>;
+type AppUpdate = Partial<Omit<HomelabApp, 'id' | 'status'>>;
 
 export async function createApp(input: AppCreate) {
   const res = await fetch('/api/apps', {

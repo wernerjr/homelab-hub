@@ -17,7 +17,6 @@ export const AppCreateSchema = z.object({
   name: z.string().min(1),
   category: z.string().min(1),
   url: z.string().url(),
-  status: AppStatusSchema.default('unknown'),
   description: z.string().min(1)
 });
 
@@ -26,7 +25,6 @@ export const AppUpdateSchema = z
     name: z.string().min(1).optional(),
     category: z.string().min(1).optional(),
     url: z.string().url().optional(),
-    status: AppStatusSchema.optional(),
     description: z.string().min(1).optional()
   })
   .partial();

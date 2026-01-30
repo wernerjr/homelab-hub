@@ -7,6 +7,8 @@ export type AppConfig = {
   databaseUrl: string;
   metricsMode: 'mock' | 'real' | 'auto';
   diskMount: string;
+  appsPingIntervalSec: number;
+  appsPingTimeoutMs: number;
 };
 
 export function getConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
@@ -29,5 +31,19 @@ export function getConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 
   const diskMount = env.DISK_MOUNT ?? '/';
 
-  return { host, port, corsOrigin, staticDir, serverName, databaseUrl, metricsMode, diskMount };
+  const appsPingIntervalSec = Number(env.APPS_PING_INTERVAL_SEC ?? 60);
+  const appsPingTimeoutMs = Number(env.APPS_PING_TIMEOUT_MS ?? 3000);
+
+  return {
+    host,
+    port,
+    corsOrigin,
+    staticDir,
+    serverName,
+    databaseUrl,
+    metricsMode,
+    diskMount,
+    appsPingIntervalSec,
+    appsPingTimeoutMs
+  };
 }

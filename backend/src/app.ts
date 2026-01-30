@@ -8,6 +8,7 @@ import type { AppConfig } from './core/config.js';
 import { createPool } from './core/db.js';
 import { bootstrapDb } from './core/bootstrap.js';
 import { appsRoutes } from './features/apps/routes.js';
+import { registerAppsPingLoop } from './features/apps/pingLoop.js';
 import { metricsRoutes } from './features/metrics/routes.js';
 import { statusRoutes } from './features/status/routes.js';
 
@@ -41,7 +42,10 @@ export async function buildApp(config: AppConfig, opts?: { skipDb?: boolean }) {
   });
 
   await app.register(statusRoutes, { prefix: '/api/status' });
+
+  registerAppsPingLoop(app);
   await app.register(appsRoutes, { prefix: '/api/apps' });
+
   await app.register(metricsRoutes, { prefix: '/api/metrics' });
 
   // Serve SPA (built frontend) from the backend in production

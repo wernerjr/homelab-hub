@@ -8,6 +8,9 @@ export const appsRoutes: FastifyPluginAsync = async (app) => {
   const service = new AppsService(app.dbPool);
   const f = app.withTypeProvider<ZodTypeProvider>();
 
+  // in-memory status cache (computed by periodic pings)
+  const statusStore = (app as any).appsStatusStore as Map<string, 'online' | 'offline' | 'unknown'> | undefined;
+
   f.get(
     '/',
     {
@@ -18,7 +21,11 @@ export const appsRoutes: FastifyPluginAsync = async (app) => {
       }
     },
     async () => {
-      return service.list();
+      const rows = await service.listRows();
+      return rows.map((r) => ({
+        ...r,
+        status: statusStore?.get(r.id) ?? 'unknown'
+      }));
     }
   );
 
@@ -33,8 +40,8 @@ export const appsRoutes: FastifyPluginAsync = async (app) => {
       }
     },
     async (req, reply) => {
-      const created = await service.create(req.body);
-      return reply.code(201).send(created);
+      const createdRow = await service.create(req.body);
+      return reply.code(201).send({ ...createdRow, status: 'unknown' });
     }
   );
 
@@ -51,9 +58,10 @@ export const appsRoutes: FastifyPluginAsync = async (app) => {
       }
     },
     async (req, reply) => {
-      const updated = await service.update(req.params.id, req.body);
-      if (!updated) return reply.code(404).send({ message: 'Not Found' });
-      return updated;
+      const updatedRow = await service.update(req.params.id, req.body);
+      if (!updatedRow) return reply.code(404).send({ message: 'Not Found' });
+      const statusStore = (app as any).appsStatusStore as Map<string, 'online' | 'offline' | 'unknown'> | undefined;
+      return { ...updatedRow, status: statusStore?.get(updatedRow.id) ?? 'unknown' };
     }
   );
 

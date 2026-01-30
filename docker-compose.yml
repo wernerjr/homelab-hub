@@ -16,6 +16,8 @@ services:
       - DATABASE_URL=postgres://promptvault:promptvault@host.docker.internal:5432/promptvault
       - METRICS_MODE=auto
       - DISK_MOUNT=/
+      - APPS_PING_INTERVAL_SEC=60
+      - APPS_PING_TIMEOUT_MS=3000
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:

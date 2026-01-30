@@ -9,12 +9,14 @@ export async function bootstrapDb(pool: DbPool) {
       name varchar(255) not null,
       category varchar(255) not null,
       url text not null,
-      status varchar(32) not null default 'unknown',
       description text not null,
       created_at timestamptz not null default now(),
       updated_at timestamptz not null default now()
     );
   `);
+
+  // Drop old persisted status column (status is computed by ping now)
+  await pool.query('alter table homelab_apps drop column if exists status');
 
   await pool.query('create index if not exists homelab_apps_category_idx on homelab_apps(category)');
   await pool.query('create index if not exists homelab_apps_name_idx on homelab_apps(name)');
@@ -24,11 +26,11 @@ export async function bootstrapDb(pool: DbPool) {
   const n = Number(count.rows[0]?.n ?? 0);
   if (n === 0) {
     await pool.query(
-      `insert into homelab_apps (name, category, url, status, description)
+      `insert into homelab_apps (name, category, url, description)
        values
-        ('Homelab Hub', 'Dashboard', 'http://192.168.15.100/', 'online', 'Dashboard principal (esta página).'),
-        ('Portainer', 'Containers', 'http://192.168.15.100:9000/', 'unknown', 'UI para Docker e stacks (Portainer CE).'),
-        ('Prompt Vault', 'Tools', 'http://192.168.15.100:3000/', 'unknown', 'App do Prompt Vault.')`
+        ('Homelab Hub', 'Dashboard', 'http://192.168.15.100/', 'Dashboard principal (esta página).'),
+        ('Portainer', 'Containers', 'http://192.168.15.100:9000/', 'UI para Docker e stacks (Portainer CE).'),
+        ('Prompt Vault', 'Tools', 'http://192.168.15.100:3000/', 'App do Prompt Vault.')`
     );
   }
 }

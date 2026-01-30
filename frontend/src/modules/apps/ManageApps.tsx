@@ -7,7 +7,6 @@ type Draft = {
   name: string;
   category: string;
   url: string;
-  status: HomelabApp['status'];
   description: string;
 };
 
@@ -15,7 +14,6 @@ const emptyDraft: Draft = {
   name: '',
   category: '',
   url: '',
-  status: 'unknown',
   description: ''
 };
 
@@ -54,7 +52,6 @@ export function ManageApps({
       name: a.name,
       category: a.category,
       url: a.url,
-      status: a.status,
       description: a.description
     });
   }
@@ -184,19 +181,6 @@ export function ManageApps({
                 onChange={(e) => setDraft((d) => ({ ...d, url: e.target.value }))}
                 className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none focus:border-white/20"
               />
-            </Field>
-            <Field label="Status">
-              <select
-                value={draft.status}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, status: e.target.value as Draft['status'] }))
-                }
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none focus:border-white/20"
-              >
-                <option value="unknown">unknown</option>
-                <option value="online">online</option>
-                <option value="offline">offline</option>
-              </select>
             </Field>
           </div>
 
